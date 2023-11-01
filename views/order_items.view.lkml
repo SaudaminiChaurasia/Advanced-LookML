@@ -88,6 +88,7 @@ view: order_items {
     type:  running_total
     sql: ${sale_price} ;;
     value_format_name: usd
+    drill_fields: [detail*]
   }
   measure: total_gross_revenue {
     label: "Total Gross Revenue"
@@ -95,57 +96,67 @@ view: order_items {
     filters: [status: "-Cancelled, -Returned"] #filtered measure
     sql: ${sale_price};;
     value_format_name: usd
+    drill_fields: [detail*]
   }
   measure: total_gross_margin {
     label: "Total Gross Margin Amount"
     type:  sum
     sql: ${gross_margin} ;;
     value_format_name: usd
+    drill_fields: [detail*]
   }
   measure: average_gross_margin {
     label: "Average Gross Margin"
     type:  average
     sql: ${gross_margin} ;;
     value_format_name: usd
+    drill_fields: [detail*]
   }
   measure: gross_margin_percentage {
     label: "Gross Margin %"
     type:  number
     value_format_name: percent_2
-    sql: 1.0*${total_gross_margin}/${total_gross_revenue} ;;
+    sql:  1.0 *${total_gross_margin}/NULLIF(${total_gross_revenue},0);;
+    drill_fields: [detail*]
   }
   measure: items_returned {
     label: "Number of Items Returned"
     type:  count_distinct
     filters: [status: "returned"] #filtered measure
     sql: ${id};;
+    drill_fields: [detail*]
   }
   measure: items_returned_rate {
     label: "Item Return Rate"
     type:  number
     sql: ${items_returned}/${count} ;;
+    drill_fields: [detail*]
   }
   measure: customer_returning_items {
     label: "Number of Customers Returning Items"
     type:  count_distinct
     filters: [status: "returned"] #filtered measure
     sql: ${user_id} ;;
+    drill_fields: [detail*]
   }
   measure: number_of_customers {
     label: "Total Number of Customers"
     type:  count_distinct
     sql: ${user_id} ;;
+    drill_fields: [detail*]
   }
   measure: percentage_of_users_with_returns{
     label: "% of Users with Returns"
     type:  number
     sql: ${customer_returning_items}/${number_of_customers} ;;
+    drill_fields: [detail*]
   }
   measure: average_spend_per_customer{
     label: "Average Spend Per Customer"
     type:  number
     sql: ${total_sale}/${number_of_customers};;
     value_format_name: usd
+    drill_fields: [detail*]
   }
 
   # ----- Sets of fields for drilling ------

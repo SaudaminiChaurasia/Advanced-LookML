@@ -69,6 +69,20 @@ view: users {
     type: zipcode
     sql: ${TABLE}.zip ;;
   }
+  dimension: customer_filter {
+    case: {
+      when: {
+        sql: DATE_DIFF(CURRENT_DATE(), ${created_date}, DAY) < 90 ;;
+        label: "New Customer"
+      }
+      else: "Long-term Customer"
+    }
+  }
+  dimension: user_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
+  }
   measure: count {
     type: count
     drill_fields: [detail*]
