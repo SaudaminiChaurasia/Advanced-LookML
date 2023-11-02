@@ -33,6 +33,12 @@ explore: order_items {
     relationship: many_to_one
   }
 
+  join: customer_metrics { #joining customer metrics with users
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${users.id} = ${customer_metrics.users_id} ;;
+  }
+
   join: inventory_items {
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;

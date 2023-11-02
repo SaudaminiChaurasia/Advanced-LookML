@@ -69,17 +69,17 @@ view: customer_metrics {
     sql: ${TABLE}.order_count ;;
   }
 
-  dimension: sales_per_customer {
-    type: number
-    sql: ${TABLE}.total_sales ;;
-    value_format_name: usd
-  }
-
   dimension: customer_lifetime_orders {
     type: tier
     tiers: [1,2,3,6,10]
     style: integer
     sql: ${order_count_per_customer};;
+  }
+
+  dimension: sales_per_customer {
+    type: number
+    sql: ${TABLE}.total_sales ;;
+    value_format_name: usd
   }
 
   dimension: customer_lifetime_revenue {
@@ -95,45 +95,24 @@ view: customer_metrics {
     sql: ${TABLE}.first_order ;;
   }
 
-  dimension: latest_order_date {
+  dimension: last_order_date {
     type: date
     sql: ${TABLE}.last_order ;;
   }
 
   dimension: is_active {
     type: yesno
-    sql: DATE_DIFF(CURRENT_DATE(), ${latest_order_date}, DAY) < 90;;
+    sql: DATE_DIFF(CURRENT_DATE(), ${last_order_date}, DAY) < 90;;
   }
 
   dimension: days_since_latest_order {
     type: number
-    sql: DATE_DIFF(CURRENT_DATE(), ${latest_order_date}, DAY) ;;
+    sql: DATE_DIFF(CURRENT_DATE(), ${last_order_date}, DAY) ;;
   }
-  dimension: is_repeat_customer {
+
+  dimension: repeat_customer {
     type: yesno
     sql: ${order_count_per_customer}>1 ;;
-  }
-
-  measure: is_repeat_customer_measure {
-    hidden: yes
-    type: sum
-    sql: if(${is_repeat_customer},1,0) ;;
-  }
-  measure: if_has_at_least_one {
-    hidden: yes
-    type: sum
-    sql: if(${order_count_per_customer}>=1,1,0) ;;
-  }
-
-  measure: repeat_purchase_rate {
-    type: number
-    value_format_name: percent_2
-    sql: ${is_repeat_customer_measure}/ ${if_has_at_least_one} ;;
-  }
-
-  measure: average_days_since_latest_order {
-    type: average
-    sql: ${days_since_latest_order} ;;
   }
 
   measure: total_lifetime_orders {
@@ -145,6 +124,42 @@ view: customer_metrics {
     type: average
     sql: ${order_count_per_customer} ;;
   }
+
+  measure: total_lifetime_revenue {
+    type: sum
+    sql: ${sales_per_customer} ;;
+    value_format_name: usd
+  }
+
+  measure: average_lifetime_revenue {
+    type: average
+    sql: ${sales_per_customer} ;;
+    value_format_name: usd
+  }
+
+  measure: average_days_since_latest_order {
+    type: average
+    sql: ${days_since_latest_order} ;;
+  }
+
+  measure: repeat_customer_value {
+    hidden: yes
+    type: sum
+    sql: if(${repeat_customer},1,0) ;; #customers who have made 2+ orders
+  }
+
+  measure: total_paying_customers {
+    hidden: yes
+    type: sum
+    sql: if(${order_count_per_customer}>=1,1,0) ;; #customer with at least 1 order lifetime
+  }
+
+  measure: repeat_purchase_rate {
+    type: number
+    value_format_name: percent_2
+    sql: ${repeat_customer_value}/ ${total_paying_customers} ;;
+  }
+
 
 
 }
