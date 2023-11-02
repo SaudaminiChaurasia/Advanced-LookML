@@ -51,6 +51,12 @@ explore: order_items {
     relationship: many_to_one
   }
 
+  join: order_patterns { #joining order patterns with orders
+    type: left_outer
+    relationship: one_to_one
+    sql_on: ${orders.order_id} = ${order_patterns.order_id} ;;
+  }
+
   join: products {
     type: left_outer
     sql_on: ${inventory_items.product_id} = ${products.id} ;;

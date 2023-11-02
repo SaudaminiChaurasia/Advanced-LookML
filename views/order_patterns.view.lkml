@@ -75,9 +75,37 @@ view: order_patterns {
     sql: ${TABLE}.days_between_orders ;;
   }
 
+  dimension: is_first_purchase {
+    type: yesno
+    sql: ${order_sequence}=1 ;;
+  }
+
+  dimension: has_subsequent_order {
+    type: yesno
+    sql: ${order_sequence}>1 ;;
+  }
+
   measure: average_days_between_orders {
     type:  average
     sql: ${TABLE}.days_between_orders ;;
   }
+
+  measure: number_of_customers {
+    type:  count_distinct
+    sql: ${user_id} ;;
+  }
+
+  measure: purchase_within_60days{
+    type:  count_distinct
+    filters: [days_between_orders: "<=60"]
+    sql: ${user_id} ;;
+  }
+
+  measure: 60_Day_Repeat_Purchase_Rate{
+    label: "% of customers that have purchased within 60 days of a prior purchase"
+    type:  number
+    sql: ${purchase_within_60days}/${number_of_customers} ;;
+  }
+
 
 }
