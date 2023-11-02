@@ -31,14 +31,14 @@ view: order_patterns {
   derived_table: {
     sql:
       SELECT
-        order.order_id  AS order_id,
-        order.user_id  AS users_id,
-        order.created_at AS created_date,
-        COUNT(order.order_id) OVER(PARTITION BY order.user_id) AS Order_Count,
-        ROW_NUMBER() OVER(PARTITION BY order.user_id ORDER BY order.created_at ASC) AS Order_Sequence,
-        DATE_DIFF(order.created_at,
-                  LAG(order.created_at) OVER (PARTITION BY order.user_id ORDER BY order.created_at ASC),
-                  DAY) AS Days_Between_Orders
+        order_id,
+        user_id,
+        created_at AS created_date,
+        COUNT(order_id) OVER(PARTITION BY user_id) AS order_count,
+        ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY created_at ASC) AS order_sequence,
+        DATE_DIFF(created_at,
+                  LAG(created_at) OVER (PARTITION BY user_id ORDER BY created_at ASC),
+                  DAY) AS days_between_orders
       FROM `looker-private-demo.thelook.orders`
         AS orders;;
   }
@@ -102,7 +102,7 @@ view: order_patterns {
   }
 
   measure: 60_Day_Repeat_Purchase_Rate{
-    label: "% of customers that have purchased within 60 days of a prior purchase"
+    #label: "% of customers that have purchased within 60 days of a prior purchase"
     type:  number
     sql: ${purchase_within_60days}/${number_of_customers} ;;
   }
