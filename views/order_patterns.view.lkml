@@ -31,13 +31,53 @@ view: order_patterns {
   derived_table: {
     sql:
       SELECT
-        order.user_id  AS users_id,
         order.order_id  AS order_id,
+        order.user_id  AS users_id,
         order.created_at AS created_date,
         COUNT(order.order_id) OVER(PARTITION BY order.user_id) AS Order_Count,
-        ROW_NUMBER() OVER(PARTITION BY order.user_id ORDER BY order.created_at ASC) AS Order_Sequence
+        ROW_NUMBER() OVER(PARTITION BY order.user_id ORDER BY order.created_at ASC) AS Order_Sequence,
+        DATE_DIFF(order.created_at,
+                  LAG(order.created_at) OVER (PARTITION BY order.user_id ORDER BY order.created_at ASC),
+                  DAY) AS Days_Between_Orders
       FROM `looker-private-demo.thelook.orders`
         AS orders;;
+  }
+
+  dimension: order_id {
+    primary_key: yes
+    type: number
+    sql: ${TABLE}.order_id ;;
+  }
+
+  dimension: user_id {
+    type: number
+    sql: ${TABLE}.user_id ;;
+  }
+
+  dimension_group: created_date {
+    type: time
+    timeframes: [raw, time, date, week, month, quarter, year]
+    sql: ${TABLE}.created_at ;;
+  }
+
+  dimension: order_count {
+    type: number
+    sql: ${TABLE}.order_count ;;
+  }
+
+  dimension: order_sequence {
+    type: number
+    sql: ${TABLE}.order_sequence ;;
+  }
+
+  dimension: days_between_orders {
+    type: number
+    sql: ${TABLE}.days_between_orders ;;
+  }
+
+  measure: average_days_between_orders {
+    type:  average
+    sql: ${TABLE}.days_between_orders ;;
   }
 
 }
