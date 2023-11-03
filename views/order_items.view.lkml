@@ -12,6 +12,36 @@ view: order_items {
     timeframes: [time, hour, date, week, month, year, hour_of_day, day_of_week, month_num, raw, week_of_year,month_name]
     sql: ${TABLE}.created_at ;;
   }
+
+  parameter: date_granularity {
+    type: unquoted
+    allowed_value: {
+      label: "Daily"
+      value: "daily"
+    }
+    allowed_value: {
+      label: "Weekly"
+      value: "weekly"
+    }
+    allowed_value: {
+      label: "Monthly"
+      value: "monthly"
+    }
+  }
+
+  dimension: date {
+    sql:
+    {% if date_granularity._parameter_value == 'daily' %}
+      ${created_date}
+    {% elsif date_granularity._parameter_value == 'weekly' %}
+      ${created_week}
+    {% elsif date_granularity._parameter_value == 'monthly' %}
+      ${created_month}
+    {% else %}
+      NULL
+    {% endif %};;
+  }
+
   dimension_group: delivered {
     type: time
     timeframes: [raw, date, week, month, quarter, year]

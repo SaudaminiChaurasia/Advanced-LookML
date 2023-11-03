@@ -104,7 +104,8 @@ view: order_patterns {
   measure: 60_Day_Repeat_Purchase_Rate{
     #label: "% of customers that have purchased within 60 days of a prior purchase"
     type:  number
-    sql: ${purchase_within_60days}/${number_of_customers} ;;
+    value_format_name: percent_2
+    sql: ${purchase_within_60days}/NULLIF(${number_of_customers},0) ;;
   }
 
 

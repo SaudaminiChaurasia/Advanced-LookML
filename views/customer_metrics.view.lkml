@@ -160,6 +160,36 @@ view: customer_metrics {
     sql: ${repeat_customer_value}/ ${total_paying_customers} ;;
   }
 
+  parameter: metric_selector {
+    type: unquoted
+    allowed_value: {
+      label: "Average Lifetime Orders"
+      value: "average_lifetime_orders"
+    }
+    allowed_value: {
+      label: "Total Lifetime Orders"
+      value: "total_lifetime_orders"
+    }
+    allowed_value: {
+      label: "Total Lifetime Revenue"
+      value: "total_lifetime_revenue"
+    }
+  }
+
+  measure: dynamic_metric_selector {
+    sql:
+    {% if ${metric_selector}._parameter_value == 'average_lifetime_orders' %}
+    ${average_lifetime_orders}
+    {% elsif ${metric_selector}._parameter_value == 'total_lifetime_orders' %}
+    ${total_lifetime_orders}
+    {% elsif ${metric_selector}._parameter_value == 'total_lifetime_revenue' %}
+    ${total_lifetime_revenue}
+    {% else %}
+    NULL
+    {% endif %};;
+    value_format_name: "usd"
+  }
+
 
 
 }
