@@ -19,6 +19,22 @@ view: users {
     sql: ${age} ;;
   }
 
+  parameter: age_tier_size { #Parameters create a filter-only field users can use to provide input to a Liquid {% parameter %} tag
+    type: number
+  }
+
+ # dimension: dynamic_age_tier {
+  #  type: tier
+   # tiers: [0, 16, 26, 36, 51, 66]
+    #style: integer
+    #sql: (${age}/{% parameter age_tier_size %});; #Liquid {% parameter %} tag
+  #}
+
+  dimension: dynamic_age_tier {
+    type: number
+    sql: TRUNC(${age}/{% parameter age_tier_size %},0)*{% parameter age_tier_size %};; #Liquid {% parameter %} tag
+  }
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;

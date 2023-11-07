@@ -90,7 +90,7 @@ view: order_patterns {
     sql: ${TABLE}.days_between_orders ;;
   }
 
-  measure: number_of_customers {
+  measure: number_of_customers { #paying customers? hoe many customers are paying rather then total
     type:  count_distinct
     sql: ${user_id} ;;
   }

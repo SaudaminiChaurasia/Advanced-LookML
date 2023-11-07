@@ -56,7 +56,13 @@ view: customer_metrics {
   ORDER BY
       1)
   group by users_id;;
-}
+} #add the where clause for dynamic age filter
+
+ #WHERE
+  #  {% condition age_range %} users.dynamic_age_tier {% endcondition %}
+ # filter: age_range {
+  #  type: number
+  #}
 
   dimension: users_id {
     type: number
@@ -178,11 +184,11 @@ view: customer_metrics {
 
   measure: dynamic_metric_selector {
     sql:
-    {% if ${metric_selector}._parameter_value == 'average_lifetime_orders' %}
+    {% if metric_selector._parameter_value == 'average_lifetime_orders' %}
     ${average_lifetime_orders}
-    {% elsif ${metric_selector}._parameter_value == 'total_lifetime_orders' %}
+    {% elsif metric_selector._parameter_value == 'total_lifetime_orders' %}
     ${total_lifetime_orders}
-    {% elsif ${metric_selector}._parameter_value == 'total_lifetime_revenue' %}
+    {% elsif metric_selector._parameter_value == 'total_lifetime_revenue' %}
     ${total_lifetime_revenue}
     {% else %}
     NULL
