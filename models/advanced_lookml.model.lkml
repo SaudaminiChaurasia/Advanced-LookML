@@ -27,10 +27,6 @@ datagroup: advanced_lookml_default_datagroup {
 persist_with: advanced_lookml_default_datagroup
 
 explore: order_items {
-  access_filter: {
-    field: products.brand
-    user_attribute: brand_test
-  }
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
